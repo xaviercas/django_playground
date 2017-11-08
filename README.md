@@ -15,7 +15,7 @@ This is a personal playground to experiment with python and Django + PosgreSQL w
 - Run a project `docker-compose up`
 - Enter a container terminal (eg migrations): `docker exec -it container_id bash`
 
-## Tuts Linkls
+## Tuts Links
 
 - <https://docs.djangoproject.com/en/2.0/intro/tutorial01/>
 - <https://docs.djangoproject.com/en/2.0/intro/tutorial02/>
