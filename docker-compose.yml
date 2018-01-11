@@ -1,4 +1,4 @@
-# docker-compose run app django-admin.py startproject project_6_11_17
+# Create a new project: docker-compose run app django-admin.py startproject name_of_project
 version: '3'
 
 services:
@@ -9,10 +9,10 @@ services:
       POSTGRES_PASSWORD: db_password
       POSTGRES_USER: db_user
       POSTGRES_DB: db_database
-    # build:
-    #   context: .
-    #   dockerfile: ./Dockerfile_Postgres
-    image: postgres:10-alpine
+    build:
+      context: .
+      dockerfile: ./Dockerfile_Postgres
+    image: django:postgres
     volumes:
       - ./postgres_data:/var/lib/postgresql/data/
 
@@ -24,7 +24,7 @@ services:
     image: django:app    
     links:
       - postgres:postgres
-    command: python /code/play_project/manage.py runserver 0.0.0.0:8000
+    command: python ./manage.py runserver 0.0.0.0:8000
     working_dir: /code/play_project
     volumes:
       - .:/code
