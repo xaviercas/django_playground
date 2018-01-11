@@ -4,7 +4,9 @@ from polls.models import Question, Choice
 
 
 def index(request):
-    return HttpResponse(request)
+    latest_question_list = Question.objects.order_by('-ques_pubdate')
+    context = {'question_list': latest_question_list}
+    return render(request, 'polls/index.html', context)
 
 
 def detail(request, question_id):
