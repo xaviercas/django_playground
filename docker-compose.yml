@@ -1,9 +1,8 @@
-# Create a new project: docker-compose run app django-admin.py startproject name_of_project
 version: '3'
 
 services:
 
-  postgres:
+  db:
     restart: always
     environment:
       POSTGRES_PASSWORD: db_password
@@ -11,24 +10,48 @@ services:
       POSTGRES_DB: db_database
     build:
       context: .
-      dockerfile: ./Dockerfile_Postgres
-    image: django:postgres
+      dockerfile: Dockerfile_Postgres
+    image: webapp:db
     volumes:
-      - ./postgres_data:/var/lib/postgresql/data/
+      - ./db_data:/var/lib/postgresql/data/
+    networks:
+      - backend
 
   app:
     restart: always
     build:
       context: .
-      dockerfile: ./Dockerfile_Python
-    image: django:app    
-    links:
-      - postgres:postgres
-    command: python ./manage.py runserver 0.0.0.0:8000
-    working_dir: /code/play_project
+      dockerfile: Dockerfile_Python
+    image: webapp:app    
     volumes:
-      - .:/code
-    ports:
-      - "8000:8000"
+      - ./playground:/code/
+    # command: python3 manage.py runserver 0.0.0.0:8000
+    command: gunicorn playground.wsgi -b 0.0.0.0:8000
+    networks:
+      - backend
+      - frontend
+    expose:
+      - "8000"
     depends_on:
-      - postgres
+      - db
+
+  http:
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile_Nginx
+    image: webapp:http
+    volumes:
+      - ./config/nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - "8080:80"
+    networks:
+      - frontend
+    depends_on:
+      - app
+
+networks:
+  backend:
+    driver: bridge
+  frontend:
+    driver: bridge
